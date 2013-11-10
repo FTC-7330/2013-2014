@@ -195,7 +195,8 @@ $RECYCLE.BIN/
 dist/
 build/
 eggs/
-parts/
+# Don't ignore parts directory... we use it for SolidWorks parts
+#parts/
 var/
 sdist/
 develop-eggs/
