@@ -1,8 +1,8 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  none)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Sensor, S2,     irSensor,       sensorHiTechnicIRSeeker600)
-#pragma config(Motor,  mtr_S1_C1_1,     rightDrive,    tmotorTetrix, PIDControl, reversed, encoder)
-#pragma config(Motor,  mtr_S1_C1_2,     leftDrive,     tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C1_1,     rightDrive,    tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     leftDrive,     tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     gHook,         tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoNone)
@@ -26,13 +26,11 @@
 
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 
-int driveDamp = 5;
-int armDamp = 5;
+int forwardsDriveDamp = 15;
+int backwardsDriveDamp = 50;
+//int armDamp = 5;
 int leftMotorTarget = 0;
 int rightMotorTarget = 0;
-int armTarget = 0;
-bool armUp;
-bool armDown;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -82,17 +80,19 @@ void initializeRobot()
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 void deadZone()
 {
+
 	if(abs(leftMotorTarget)<10)
 		leftMotorTarget = 0;
 	if(abs(rightMotorTarget)<10)
 		rightMotorTarget = 0;
+
 	/*if(abs(joystick.joy2_y1)<10)
 		joystick.joy1_y1=0;
 	if(abs(joystick.joy2_y2)<10)
 		joystick.joy1_y2=0;*/
 }
 
-task inputManager()
+void inputManager()
 {
 	while(true)
 	{
@@ -108,36 +108,52 @@ task inputManager()
 	}
 }
 
+int min(int a, int b)
+{
+	if(a > b)
+	{
+		return b;
+	}
+	else
+	{
+		return a;
+	}
+}
+
 task drive()
 {
-	deadZone();
+	writeDebugStream("int x is: %d \n", leftDrive);
 	while(true)
 	{
+		deadZone();
 		if(motor[rightDrive] != rightMotorTarget)
 		{
 			if(motor[rightDrive] < rightMotorTarget)
 			{
-				motor[rightDrive] += driveDamp;
+				motor[rightDrive] += min(forwardsDriveDamp, rightMotorTarget - motor[rightDrive]);
 			}
 			else
 			{
-				motor[rightDrive] -= driveDamp;
+				motor[rightDrive] -= min(backwardsDriveDamp, motor[rightDrive] - motor[rightDrive]);
 			}
-			wait1Msec(10);
+			wait10Msec(10);
 		}
 
 		if(motor[leftDrive] != leftMotorTarget)
 		{
 			if(motor[leftDrive] < leftMotorTarget)
 			{
-				motor[leftDrive] += driveDamp;
+				motor[leftDrive] += min(forwardsDriveDamp, leftMotorTarget - motor[leftDrive]);
 			}
 			else
 			{
-				motor[leftDrive] -= driveDamp;
+				motor[leftDrive] -= min(backwardsDriveDamp, motor[leftDrive] - leftMotorTarget);
 			}
-			wait1Msec(10);
+			wait10Msec(10);
+
 		}
+
+
 
 	}
 }
@@ -163,7 +179,10 @@ task moveArm()
 task main()
 {
   initializeRobot();
-		startTask(drive);
-		startTask(moveArm);
-  }
+
+	StartTask(drive);
+	StartTask(moveArm);
+	inputManager();
+
+
 }
