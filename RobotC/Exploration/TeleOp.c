@@ -27,10 +27,12 @@
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 
 int driveDamp = 25;
-int armDamp = 10;
+
 int armSpeed = 0;
-int armAccelUp = 7;
+int armAccelUp = 5;
 int armAccelDown = 5;
+int armStopUp = 7;
+int armStopDown = 3;
 int armDownMV = -20;
 int armUpMV = 30;
 
@@ -194,13 +196,13 @@ task drive()
 		{
 			if(armSpeed > 0)
 			{
-				motor[arm] -= min(armSpeed, armAccelUp);
-				armSpeed -= min(armSpeed, armAccelUp);
+				motor[arm] -= min(armSpeed, armStopUp);
+				armSpeed -= min(armSpeed, armStopUp);
 			}
 			else if(armSpeed < 0)
 			{
-				motor[arm] += min(abs(armSpeed), armAccelDown);
-				armSpeed += min(abs(armSpeed), armAccelDown);
+				motor[arm] += min(abs(armSpeed), armStopDown);
+				armSpeed += min(abs(armSpeed), armStopDown);
 			}
 
 		}
