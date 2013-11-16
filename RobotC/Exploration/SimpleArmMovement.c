@@ -15,9 +15,11 @@ task main()
 	{
 	while(true)
 		{
-		if(nNxtButtonPressed == 1)
-			motor[arm] = 50;
-		if(nNxtButtonPressed == 3)
-			motor[arm] = -50;
+		if(nNxtButtonPressed == 2)
+			motor[arm] = 25;
+		else if(nNxtButtonPressed == 1)
+			motor[arm] = -25;
+	 	else
+			motor[arm] = 0;
 		}
 	}
