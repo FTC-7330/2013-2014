@@ -6,8 +6,8 @@
 #pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_2,     winch,         tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    gripper,              tServoStandard)
-#pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
-#pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_2,    safety,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_3,    trigger,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
@@ -32,7 +32,7 @@ int driveDamp = 25;
 
 int leftMotorTarget = 0;
 int rightMotorTarget = 0;
-int gripperClosedPos = 223;
+int gripperClosedPos = 240;
 int gripperOpenPos = 136;
 
 bool armTurbo = false;
@@ -40,12 +40,11 @@ bool armForward = false;
 bool armBackward = false;
 bool gripperOpen = false;
 
-bool winchTurbo = true;
-bool winchIn = false;
+/*bool winchIn = false;
 bool winchOut = false;
 bool safetyOpen = false;
 
-bool fireGHook = false;
+bool fireGHook = false;*/
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //                                    initializeRobot
@@ -97,15 +96,6 @@ void initializeRobot()
 void deadZone()
 {
 
-	if(abs(leftMotorTarget) < 10)
-	{
-		leftMotorTarget = 0;
-	}
-
-	if(abs(rightMotorTarget) < 10)
-	{
-		rightMotorTarget = 0;
-	}
 
 
 }
@@ -115,8 +105,8 @@ void inputManager()
 
 	bool buttonBIsDown = false;
 	bool buttonBWasDown = false;
-	bool safetyButtonIsDown = false;
-	bool safetyButtonWasDown = false;
+	//bool safetyButtonIsDown = false;
+	//bool safetyButtonWasDown = false;
 
 	while(true)
 	{
@@ -125,7 +115,18 @@ void inputManager()
 		leftMotorTarget = joystick.joy1_y2;
 		rightMotorTarget = joystick.joy1_y1;
 
-		armTurbo = (joy2Btn(5) != 1);
+
+		if(abs(leftMotorTarget) < 10)
+		{
+			leftMotorTarget = 0;
+		}
+
+		if(abs(rightMotorTarget) < 10)
+		{
+			rightMotorTarget = 0;
+		}
+
+		armTurbo = (joy2Btn(5) == 1);
 
 		// Button 2- B
 		armForward = (joystick.joy2_TopHat == 0);
@@ -145,7 +146,7 @@ void inputManager()
 		}
 		buttonBWasDown = buttonBIsDown;
 
-		safetyButtonIsDown = (joy2Btn(5) != 1);
+	/*	safetyButtonIsDown = (joy1Btn(5) != 1);
 
 		if(safetyButtonIsDown && !safetyButtonWasDown)
 		{
@@ -153,10 +154,10 @@ void inputManager()
 		}
 		safetyButtonWasDown = safetyButtonIsDown;
 
-		winchOut = (joystick.joy2_TopHat == 0);
-		winchIn = (joystick.joy2_TopHat == 4);
+		winchOut = (joystick.joy1_TopHat == 0);
+		winchIn = (joystick.joy1_TopHat == 4);
 
-		fireGHook = (joy1Btn(1) == 1);
+		fireGHook = (joy1Btn(1) == 1);*/
 	}
 }
 
@@ -168,6 +169,7 @@ int min(int a, int b)
 	}
     return a;
 }
+
 
 task drive()
 {
@@ -217,24 +219,32 @@ task drive()
 			motor[arm]=0;
 		}
 
-		if(winchIn)
+		/*if(winchIn)
 		{
-			if(winchTurbo)
-				motor[winch]= -30;
-			else
-				motor[winch]= -10;
-			}
+			motor[winch]= -30;
+		}
 		else if(winchOut)
 		{
-			if(winchTurbo)
-				motor[winch]= 30;
-			else
-				motor[winch]= 10;
+			motor[winch]= 30;
 		}
 		else
 		{
 			motor[winch]= 0;
 		}
+
+		if(safetyOpen)
+		{
+			servo[safety] = 150;
+		}
+		else
+		{
+			servo[safety] = 50;
+		}
+
+		if(safetyOpen && fireGHook)
+		{
+			servo[trigger] = 150;
+		}*/
 
 		wait10Msec(5);
 
@@ -266,7 +276,7 @@ task main()
 {
   initializeRobot();
 
-  //waitForStart();
+  waitForStart();
 
 	StartTask(drive);
 	StartTask(Gripper);
