@@ -18,57 +18,61 @@
 #include "JoystickDriver.c"
 
 void rightTurn()
+{
+	while(nMotorEncoder[rightDrive] < 2200)
 	{
-	motor[rightDrive] = -30;
-	motor[leftDrive] = 30;
-	wait1Msec(1350);
+		motor[rightDrive] = 30;
+		motor[leftDrive] = -30;
+	}
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
-	}
+}
 
 task main()
 	{
 	//waitForStart();
+	int forwardDistanceRight = 0;
+	int forwardDistanceLeft = 0;
 
-	while(SensorValue[irSensor] != 8)
-		{
+	nMotorEncoder[leftDrive] = 0;
+	nMotorEncoder[rightDrive] = 0;
+
+	// turning when IR is 2 and 8(?)
+	while(SensorValue[irSensor] != 2)
+	{
 		motor[rightDrive] = 20;
 		motor[leftDrive] = 20;
 
 		int display = SensorValue[irSensor];
 		int right = nMotorEncoder[rightDrive];
 		int left = nMotorEncoder[leftDrive];
+
 		nxtDisplayString(0,"%d",display);
 		nxtDisplayString(1, "Right: %d                      ", right);
 		nxtDisplayString(2, "Left: %d                       ", left);
-		nxtDisplayString(3,"                                ");
-		nxtDisplayString(4,"                                ");
-		nxtDisplayString(5,"                                ");
-		nxtDisplayString(6,"                                ");
-		nxtDisplayString(7,"                                ");
-		nxtDisplayString(8,"                                ");
-		}
-		motor[rightDrive] = -30;
-		motor[leftDrive] = -30;
-		wait1Msec(400);
-		motor[rightDrive] = 0;
-		motor[leftDrive] = 0;
+	}
 
-		rightTurn();
+	wait1Msec(400);
 
-		while(true)
-		{
-			int display = SensorValue[irSensor];
+		//motor[rightDrive] = -30;
+		//motor[leftDrive] = -30;
+
+	motor[rightDrive] = 0;
+	motor[leftDrive] = 0;
+	wait1Msec(400);
+
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
+	rightTurn();
+
+	while(true)
+	{
+		int display = SensorValue[irSensor];
 		int right = nMotorEncoder[rightDrive];
 		int left = nMotorEncoder[leftDrive];
 		nxtDisplayString(0,"%d",display);
 		nxtDisplayString(1, "Right: %d                      ", right);
 		nxtDisplayString(2, "Left: %d                       ", left);
-		nxtDisplayString(3,"                                ");
-		nxtDisplayString(4,"                                ");
-		nxtDisplayString(5,"                                ");
-		nxtDisplayString(6,"                                ");
-		nxtDisplayString(7,"                                ");
-		nxtDisplayString(8,"                                ");
 	}
-	}
+}
