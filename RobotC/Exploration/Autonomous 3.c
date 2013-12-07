@@ -17,75 +17,140 @@
 
 #include "JoystickDriver.c"
 
-void rightTurn()
+task display()
 {
-	while(nMotorEncoder[rightDrive] < 2200 || nMotorEncoder[leftDrive] > -2200)// while right < 2200 or the left > -2200
-		{
-		if(nMotorEncoder[rightDrive] < 2200)
-			motor[rightDrive] = 30;
-		else
-			motor[rightDrive] = 0;
-
-		if(nMotorEncoder[leftDrive] > -2200)
-			motor[leftDrive] = -30;
-		else
-			motor[leftDrive] = 0;
-		}
 
 		int display = SensorValue[irSensor];
 		int right = nMotorEncoder[rightDrive];
 		int left = nMotorEncoder[leftDrive];
+
 		nxtDisplayString(0,"%d",display);
 		nxtDisplayString(1, "Right: %d                      ", right);
 		nxtDisplayString(2, "Left: %d                       ", left);
-		nxtDisplayString(3, "                        ");
-		nxtDisplayString(4, "                        ");
+}
+
+void leftTurn()
+{
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
+	while(nMotorEncoder[rightDrive] < 2200 || nMotorEncoder[leftDrive] > -2200)
+	{
+		if(nMotorEncoder[rightDrive] < 2200)
+		{
+			motor[rightDrive] = 30;
+		}
+
+		if(nMotorEncoder[leftDrive] > -2200)
+		{
+			motor[leftDrive] = -30;
+		}
+	}
+
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
+}
+
+void drive(int distanceRight, int distanceLeft, bool forward)
+{
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
+	while(abs(nMotorEncoder[rightDrive]) < distanceRight || abs(nMotorEncoder[leftDrive]) < distanceLeft)
+	{
+		if(nMotorEncoder[rightDrive] < distanceRight)
+		{
+			if(forward)
+			{
+				motor[rightDrive] = 30;
+			}
+			else
+			{
+				motor[rightDrive] = -30;
+			}
+
+		}
+
+		if(nMotorEncoder[leftDrive] < distanceLeft)
+		{
+			if(forward)
+			{
+				motor[leftDrive] = 30;
+			}
+			else
+			{
+				motor[leftDrive] = -30;
+			}
+
+		}
+	}
+
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
+
+}
+void rightTurn()
+{
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
+	while(nMotorEncoder[rightDrive] < -2200 || nMotorEncoder[leftDrive] > 2200)
+	{
+		if(nMotorEncoder[rightDrive] < -2200)
+		{
+			motor[rightDrive] = -30;
+		}
+
+		if(nMotorEncoder[leftDrive] > 2200)
+		{
+			motor[leftDrive] = 30;
+		}
+	}
+
+	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[leftDrive] = 0;
+
 }
 
 task main()
-	{
-	//waitForStart();
+{
+	waitForStart();
+
+	StartTask(display);
+
+	servo[gripper] = 85;
+	motor[arm] = 50;
+	wait1Msec(500);
+	motor[arm] = 0;
 
 	nMotorEncoder[leftDrive] = 0;
 	nMotorEncoder[rightDrive] = 0;
+	int distanceForwardRight = 0;
+	int distanceForwardLeft = 0;
 
 	// turning when IR is 2 and 8(?)
 	while(SensorValue[irSensor] != 2)
 	{
 		motor[rightDrive] = 50;
 		motor[leftDrive] = 50;
-
-		int display = SensorValue[irSensor];
-		int right = nMotorEncoder[rightDrive];
-		int left = nMotorEncoder[leftDrive];
-
-		nxtDisplayString(0,"%d",display);
-		nxtDisplayString(1, "Right: %d                      ", right);
-		nxtDisplayString(2, "Left: %d                       ", left);
 	}
 
 	wait1Msec(570);
 
-		//motor[rightDrive] = -30;
-		//motor[leftDrive] = -30;
-
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
-	nMotorEncoder[rightDrive] = 0;
-	nMotorEncoder[leftDrive] = 0;
-	wait1Msec(400);
 
+	distanceForwardRight = nMotorEncoder[rightDrive];
+	distanceForwardLeft = nMotorEncoder[leftDrive];
 
+	leftTurn();
+	drive(50, 50, true);
+	wait1Msec(2000);
+	servo[gripper] = 240;
+	drive(50, 50, false);
+	leftTurn()
+	drive(distanceForwardRight - 40, distanceForwardLeft - 40, true);
 
-	rightTurn();
-
-	while(true)
-	{
-		int display = SensorValue[irSensor];
-		int right = nMotorEncoder[rightDrive];
-		int left = nMotorEncoder[leftDrive];
-		nxtDisplayString(0,"%d",display);
-		nxtDisplayString(1, "Right: %d                      ", right);
-		nxtDisplayString(2, "Left: %d                       ", left);
-	}
 }
