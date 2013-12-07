@@ -43,41 +43,36 @@ void waitForStop()
 
 }
 
-void leftTurn()
+const int encoderTicksPerDegree = 2200/90;
+
+// right turn is positive degrees, left turn is negative.
+void Turn(int degrees)
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	nMotorEncoderTarget[rightDrive] = 2200;
-	nMotorEncoderTarget[leftDrive] = -2200;
+	nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPerDegree;
+	nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPerDegree;
 
-	motor[rightDrive] = 30;
-	motor[leftDrive] = -30;
+	if (degrees < 0)
+	{
+		motor[rightDrive] = 30;
+		motor[leftDrive] = -30;
+  }
+  else
+  {
+		motor[rightDrive] = -30;
+		motor[leftDrive] = 30;
+  }
 
 	waitForStop();
 
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-}
-
-void rightTurn()
-{
-	nMotorEncoder[rightDrive] = 0;
-	nMotorEncoder[leftDrive] = 0;
-
-	nMotorEncoderTarget[rightDrive] = -2200;
-	nMotorEncoderTarget[leftDrive] = 2200;
-
-	motor[rightDrive] = -30;
-	motor[leftDrive] = 30;
-
-	waitForStop();
-
-	nMotorEncoder[rightDrive] = 0;
-	nMotorEncoder[leftDrive] = 0;
 
 }
+
 void drive(int distanceRight, int distanceLeft,int speed, bool forward)
 {
 	nMotorEncoder[rightDrive] = 0;
@@ -102,7 +97,6 @@ void drive(int distanceRight, int distanceLeft,int speed, bool forward)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 }
-
 
 task main()
 {
@@ -136,7 +130,7 @@ task main()
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
 
-	leftTurn();
+	Turn(-90);
 	wait1Msec(300);
 	drive(1700, 1700,40, true);
 	wait1Msec(300);
@@ -144,9 +138,8 @@ task main()
 	wait1Msec(300);
 	drive(-1700, -1700,30, false);
 	wait1Msec(300);
-	leftTurn();
+	Turn(-90);
 	drive(distanceForwardRight + 1200, distanceForwardLeft + 1200, 60, true);
 	wait1Msec(300);
-	rightTurn();
-
+	Turn(60);
 }
