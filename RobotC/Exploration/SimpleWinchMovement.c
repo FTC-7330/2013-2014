@@ -22,7 +22,9 @@ task main()
 		{
 		if(nNxtButtonPressed == 2)
 			motor[winch] = 50;
-		if(nNxtButtonPressed == 1)
+		else if(nNxtButtonPressed == 1)
 			motor[winch] = -50;
+		else
+			motor[winch] = 0;
 		}
 	}

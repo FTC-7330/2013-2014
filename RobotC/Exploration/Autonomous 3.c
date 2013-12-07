@@ -125,21 +125,25 @@ task main()
 	distanceForwardRight = nMotorEncoder[rightDrive];
 	distanceForwardLeft = nMotorEncoder[leftDrive];
 
-	drive(1400, 1400, 50, true);
+	drive(1400, 1400, 90, true);
 
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
 
 	Turn(-90);
 	wait1Msec(300);
-	drive(1700, 1700,40, true);
+	drive(1700, 1700,30, true);
 	wait1Msec(300);
 	servo[gripper] = 240;
 	wait1Msec(300);
-	drive(-1700, -1700,30, false);
+	drive(-1700, -1700,90, false);
 	wait1Msec(300);
 	Turn(-90);
-	drive(distanceForwardRight + 1200, distanceForwardLeft + 1200, 60, true);
+	drive(distanceForwardRight + 200, distanceForwardLeft + 200, 90, true);
 	wait1Msec(300);
 	Turn(60);
+	drive(8000,8000,90,true);
+	Turn(130);
+	drive(7800,7800,90,true);
+
 }

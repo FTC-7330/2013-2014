@@ -18,7 +18,7 @@ task main()
 		{
 		if(nNxtButtonPressed == 3 && forward == true)
 			forward = false;
-		if(nNxtButtonPressed == 3 && upDown == false)
+		if(nNxtButtonPressed == 3 && forward == false)
 			forward = true;
 
 		if(forward) // if the arm is in the forward position
