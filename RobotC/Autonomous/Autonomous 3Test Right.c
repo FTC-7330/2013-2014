@@ -23,12 +23,10 @@ task display()
 			int display = SensorValue[irSensor];
 			int right = nMotorEncoder[rightDrive];
 			int left = nMotorEncoder[leftDrive];
-			int sonarValue = SensorValue[sonar];
 
 			nxtDisplayString(0,"%d",display);
 			nxtDisplayString(1, "Right: %d                      ", right);
 			nxtDisplayString(2, "Left: %d                       ", left);
-			nxtDisplayString(3, "Sonar: %d       ", sonarValue);
 			wait10Msec(10);
 	  }
 }
@@ -104,7 +102,7 @@ void drive(int distanceRight, int distanceLeft,int speed, bool forward)
 task armRaise()
 {
 	motor[arm] = -30;
-	wait1Msec(1600);
+	wait1Msec(1800);
 	motor[arm] = 0;
 }
 task main()
@@ -124,7 +122,7 @@ task main()
 	int turnDistanceLeft = 0;
 
 	// turning when IR is 2 and 8(?)
-	while(SensorValue[irSensor] != 2)
+	while(SensorValue[irSensor] != 8)
 	{
 		motor[rightDrive] = 90;
 		motor[leftDrive] = 90;
@@ -135,7 +133,7 @@ task main()
 
 	if(distanceForwardRight < 5000)
 	{
-		drive(1300, 1300, 90, true);
+		drive(750, 750, 90, true);
 	}
 	else
 	{
@@ -145,11 +143,9 @@ task main()
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
 
-	wait10Msec(500);
+	Turn(90);
 
-	Turn(-90);
-
-	while(SensorValue[sonar] > 35)
+	while(SensorValue[sonar] > 30)
 	{
 		motor[rightDrive] = 50;
 		motor[leftDrive] = 50;
@@ -162,10 +158,10 @@ task main()
 	servo[gripper] = 240;
 	wait1Msec(300);
 	drive(-turnDistanceRight, -turnDistanceLeft, 90, false);
-	Turn(-90);
+	Turn(90);
 	drive(distanceForwardRight + 700, distanceForwardLeft + 700, 90, true);
-	Turn(55);
+	Turn(-55);
 	drive(6000, 6000, 90, true);
-	Turn(120);
+	Turn(-120);
 	drive(7800, 7800, 90, true);
 }
