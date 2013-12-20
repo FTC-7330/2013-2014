@@ -124,7 +124,7 @@ void driveArm(int distanceUp, int speed)
 {
 	nMotorEncoder[arm] = 0;
 
-	nMotorEncoderTarget[arm] = distanceUp;
+	nMotorEncoderTarget[arm] = -distanceUp;
 
 		if(nMotorEncoderTarget[arm]<0)
 		{
@@ -139,8 +139,7 @@ void driveArm(int distanceUp, int speed)
 	}
 	motor[arm]=0;
 
-	nMotorEncoder[rightDrive] = 0;
-	nMotorEncoder[leftDrive] = 0;
+	nMotorEncoder[arm] = 0;
 }
 
 task armRaise()
@@ -156,7 +155,7 @@ task main()
 	wait1Msec(100);
 	StartTask(display);
 	//StartTask(armRaise);
-
+	driveArm(1500,60);
 	nMotorEncoder[leftDrive] = 0;
 	nMotorEncoder[rightDrive] = 0;
 
