@@ -4,7 +4,7 @@
 #pragma config(Motor,  motorA,          flag,          tmotorNXT, PIDControl, encoder)
 #pragma config(Motor,  mtr_S1_C1_1,     rightDrive,    tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     leftDrive,     tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C2_2,     winch,         tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    gripper,              tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    safety,               tServoStandard)
