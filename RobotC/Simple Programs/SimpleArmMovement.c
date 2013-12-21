@@ -27,9 +27,9 @@ task main()
 	StartTask(displayValues);
 	while(true)
 		{
-		if(nNxtButtonPressed == 2) // up
+		if(nNxtButtonPressed == 1) // up
 			motor[arm] = 50;
-		else if(nNxtButtonPressed == 1) // down
+		else if(nNxtButtonPressed == 2) // down
 			motor[arm] = -5;
 	 	else
 			motor[arm] = 0;
