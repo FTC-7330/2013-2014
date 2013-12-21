@@ -295,7 +295,7 @@ task Winch()
 	{
 		if(winchIn)
 		{
-			motor[winch] = 85;
+			motor[winch] = -85;
 		}
 		else
 		{
