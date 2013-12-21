@@ -4,7 +4,7 @@
 #pragma config(Sensor, S3,     sonar,          sensorSONAR)
 #pragma config(Motor,  mtr_S1_C1_1,     leftDrive,     tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     rightDrive,    tmotorTetrix, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, PIDControl, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C2_2,     gHook,         tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    gripper,              tServoNone)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
@@ -24,11 +24,12 @@ task display()
 			int display = SensorValue[irSensor];
 			int right = nMotorEncoder[rightDrive];
 			int left = nMotorEncoder[leftDrive];
+			int sonarValue = SensorValue[sonar];
 
 			nxtDisplayString(0,"%d",display);
 			nxtDisplayString(1, "Right: %d                      ", right);
 			nxtDisplayString(2, "Left: %d                       ", left);
-			wait10Msec(10);
+			nxtDisplayString(3, "Sonar: %d       ", sonarValue);
 	  }
 }
 
@@ -46,8 +47,8 @@ void waitForStop()
 
 // competition value: 20
 // test value: 23
-const int encoderTicksPerDegree = 23;
-
+const int encoderTicksPerDegree = 24;
+int sonarDistance = 0;
 // right turn is positive degrees, left turn is negative.
 void Turn(int degrees)
 {
@@ -118,21 +119,31 @@ void driveNoWait(int distanceRight, int distanceLeft,int speed, bool forward)
 		motor[leftDrive] = -speed;
 	}
 }
+void driveArm(int distanceUp, int speed)
+{
+	nMotorEncoder[arm] = 0;
 
+	nMotorEncoderTarget[arm] = distanceUp;
+
+	motor[arm]=speed;
+
+	while(nMotorRunState[arm]!=runStateIdle)
+	{
+	}
+	motor[arm]=0;
+
+	nMotorEncoder[arm] = 0;
+}
 
 task armRaise()
 {
-	motor[arm] = -30;
-	wait1Msec(1700);
-	motor[arm] = 0;
+	driveArm(1800, 40);
 }
 task main()
 {
-
 	//waitForStart();
 	servo[gripper] = 85;
 	wait1Msec(100);
-
 	StartTask(display);
 	StartTask(armRaise);
 
@@ -145,63 +156,51 @@ task main()
 	int turnDistanceLeft = 0;
 
 	// turning when IR is 2 and 8(?)
+	//motor[leftDrive]=90;
+	//motor[rightDrive]=90;
 	driveNoWait(19000,19000,90,true);
 	while(SensorValue[irSensor] != 8)
 	{
-		/*if(nMotorEncoder[leftDrive]==nMotorEncoder[rightDrive])
-		{
-			motor[leftDrive]=90;
-			motor[rightDrive]=90;
-		}
-		if(nMotorEncoder[leftDrive]>nMotorEncoder[rightDrive])
-		{
-			motor[leftDrive]=87;
-			motor[rightDrive]=90;
-		}
-		if(nMotorEncoder[leftDrive]<nMotorEncoder[rightDrive])
-		{
-			motor[leftDrive]=90;
-			motor[rightDrive]=87;
-		}*/
 	}
-	motor[leftDrive]=0;
-	motor[rightDrive]=0;
+	motor[leftDrive] = 0;
+	motor[rightDrive] = 0;
+	wait1Msec(200);
 	distanceForwardRight = nMotorEncoder[rightDrive];
 	distanceForwardLeft = nMotorEncoder[leftDrive];
+
 	if(distanceForwardRight < 5000)
 	{
 		drive(750, 750, 90, true);
+		sonarDistance = 25;
 	}
 	else
 	{
 		drive(-750,-750,90,false);
+		sonarDistance = 30;
 	}
-
-
 
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
-
-	wait1Msec(200);
+	wait1Msec(250);
 
 	Turn(90);
 
 	motor[rightDrive] = 50;
 	motor[leftDrive] = 50;
-
-	while(SensorValue[sonar] > 30)
+	//driveNoWait(2000,2000,50,true);
+	while(SensorValue[sonar] > sonarDistance)
 	{
 	}
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
-
 	turnDistanceRight = nMotorEncoder[rightDrive];
 	turnDistanceLeft = nMotorEncoder[leftDrive];
+	wait10Msec(100);
 	servo[gripper] = 240;
 	wait1Msec(300);
 	drive(-turnDistanceRight, -turnDistanceLeft, 90, false);
 	Turn(90);
-	drive(distanceForwardRight , distanceForwardLeft , 90, true);
+	drive(distanceForwardRight + 700, distanceForwardLeft + 700, 90, true);
 	Turn(-55);
 	drive(6000, 6000, 90, true);
 	Turn(-120);
