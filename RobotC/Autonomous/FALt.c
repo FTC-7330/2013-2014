@@ -47,7 +47,7 @@ void waitForStop()
 
 // competition value: 20
 // test value: 23
-const int encoderTicksPerDegree = 24;
+const int encoderTicksPerDegree = 25;
 int sonarDistance = 0;
 // right turn is positive degrees, left turn is negative.
 void Turn(int degrees)
@@ -175,7 +175,7 @@ task main()
 	}
 	else
 	{
-		drive(750, 750, 90, true);
+		drive(600, 600, 90, true);
 		sonarDistance = 30;
 	}
 
