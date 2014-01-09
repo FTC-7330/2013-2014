@@ -171,7 +171,6 @@ task main()
 	if(distanceForwardRight < 5000)
 	{
 		drive(1800, 1800, 90, true);
-		//sonarDistance = 25;
 	}
 	else
 	{
@@ -204,7 +203,7 @@ task main()
 	Turn(90);
 	if(distanceForwardRight < 5000)
 	{
-		drive(distanceForwardRight, distanceForwardLeft, 90, true);
+		drive(distanceForwardRight + 400, distanceForwardLeft + 400, 90, true);
 	}
 	else
 	{
