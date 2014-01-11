@@ -16,6 +16,16 @@
 
 #include "JoystickDriverChanges.c" .
 
+#define BUTTON_X 1
+#define BUTTON_Y 4
+#define BUTTON_A 2
+#define BUTTON_B 3
+#define LEFT_BUTTON 5
+#define RIGHT_BUTTON 6
+#define START_BUTTON 10
+#define TOP_HAT_UP 0
+#define TOP_HAT_DOWN 4
+
 int driveDamp = 25;
 
 int leftMotorTarget = 0;
@@ -30,19 +40,39 @@ bool armForward = false;
 bool armBackward = false;
 bool gripperOpen = false;
 
+
 bool flagRunning = false;
 bool winchIn = false;
 
+int targetPosition = 0;
+bool forward = true;
 
+int position1Value = 1;
+int position2Value = 2600;
+int position3Value = 3500;
+int middleValue = 2800;
+int positionMaxValue = 4000;
+
+int encoderValue = 0;
 
 void initializeRobot()
 {
 	nMotorEncoder[leftDrive] = 0;
 	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[arm] = 0;
 	gripperOpen = false;
   return;
 }
 
+task display()
+{
+    while (true)
+    {
+			int display = nMotorEncoder[arm];
+
+			nxtDisplayString(0,"arm: %d",display);
+	  }
+}
 
 /* inputManager reads input from both controllers and sets the values of
 	 corresponding variables.
@@ -80,6 +110,7 @@ void inputManager()
 		rightJValue =joystick.joy1_y2;
 		leftJValue = joystick.joy1_y1;
 
+		encoderValue = nMotorEncoder[arm];
 
 		if(abs(joystick.joy1_y2) < 10)
 		{
@@ -113,13 +144,14 @@ void inputManager()
 			}
 		}
 
-		armTurbo = (joy2Btn(5) == 1);
-		armForward = (joystick.joy2_TopHat == 0);
-		armBackward = (joystick.joy2_TopHat == 4);
+		armTurbo = (joy2Btn(LEFT_BUTTON) == 1);
 
-		flagRunning = (joy1Btn(5) == 1);
+		armForward = (joystick.joy2_TopHat == TOP_HAT_UP);
+		armBackward = (joystick.joy2_TopHat == TOP_HAT_DOWN);
 
-		if((joy1Btn(6) == 1)&&(joy2Btn(6)==1))
+		//flagRunning = (joy1Btn(5) == 1);
+
+		if((joy1Btn(RIGHT_BUTTON) == 1)&&(joy2Btn(RIGHT_BUTTON)==1))
 		{
 			winchIn=true;
 		}
@@ -128,12 +160,43 @@ void inputManager()
 			winchIn = false;
 		}
 
-		buttonBIsDown = (joy2Btn(2) == 1);
+		buttonBIsDown = (joy2Btn(BUTTON_B) == 1);
 		if(buttonBIsDown && !buttonBWasDown)
 		{
 			gripperOpen = !gripperOpen;
 		}
 		buttonBWasDown = buttonBIsDown;
+
+		if (joy2Btn(START_BUTTON) == 1)
+		{
+			nMotorEncoder[arm] = 1;
+		}
+
+		if(joy2Btn(BUTTON_A) == 1)
+		{
+			targetPosition = position1Value;
+		}
+		else if(joy2Btn(BUTTON_X) == 1)
+		{
+			targetPosition = position2Value;
+		}
+		else if(joy2Btn(BUTTON_Y) == 1)
+		{
+			targetPosition = position3Value;
+		}
+		else if(armForward)
+		{
+			targetPosition = 20000;
+		}
+		else if(armBackward)
+		{
+			targetPosition = -20000;
+		}
+		else
+		{
+			motor[arm] = 0;
+			targetPosition = 0;
+		}
 	}
 }
 
@@ -152,41 +215,9 @@ task Drive()
 {
 	bool leftEncoderChanged = true;
 	bool rightEncoderChanged = true;
-	int pastLeftEncoder;
-	int pastRightEncoder;
 
 	while(true)
 	{
-	//int leftEncoder = nMotorEncoder[leftDrive];
-	//int rightEncoder = nMotorEncoder[rightDrive];
-
-	//	if(leftEncoder!=pastLeftEncoder)
-	//	{
-	//		leftEncoderChanged = true;
-	//	}
-	//	else
-	//	{
-	//		leftEncoderChanged = false;
-	//	}
-
-	//	if(rightEncoder!=pastRightEncoder)
-	//	{
-	//		rightEncoderChanged = true;
-	//	}
-	//	else
-	//	{
-	//		rightEncoderChanged = false;
-	//	}
-
-		/*if((!rightEncoderChanged&&abs(motor[rightDrive])>10)||(!leftEncoderChanged&&abs(motor[leftDrive])>10))
-		{
-			motor[rightDrive] = 0;
-			motor[leftDrive] = 0;
-			//PlaySound(soundBeepBeep);
-			wait10Msec(10);
-			ClearSounds();
-		}*/
-
 		if(motor[rightDrive] != rightMotorTarget)
 		{
 			if(motor[rightDrive] < rightMotorTarget)
@@ -209,8 +240,6 @@ task Drive()
 			{
 				motor[leftDrive] -= min(driveDamp, motor[leftDrive] - leftMotorTarget);
 			}
-		//pastLeftEncoder = leftEncoder;
-		//pastRightEncoder = rightEncoder;
 		}
 
 		wait10Msec(5);
@@ -219,7 +248,7 @@ task Drive()
 }
 
 // arm sets the value of the arm motor
-task Arm()
+/* task Arm()
 {
 	while(true)
 	{
@@ -251,6 +280,81 @@ task Arm()
 		}
 
 		wait10Msec(5);
+	}
+} */
+
+task ArmPositions()
+{
+
+	while(true)
+	{
+		forward = (nMotorEncoder[arm] < middleValue);
+
+		if(targetPosition != 0)
+		{
+			if (abs(nMotorEncoder[arm] - targetPosition) > 100)
+			{
+				if(forward)
+				{
+					if(nMotorEncoder[arm] > targetPosition)
+					{
+						if (!armTurbo)
+						{
+							motor[arm] = -4;
+						}
+						else
+						{
+							motor[arm] = -14;
+						}
+					}
+					else
+					{
+						if (!armTurbo)
+						{
+							motor[arm] = 70;
+						}
+						else
+						{
+							motor[arm] = 80;
+						}
+					}
+				}
+				else
+				{
+					if(nMotorEncoder[arm] > targetPosition)
+					{
+						if (!armTurbo)
+						{
+							motor[arm] = -70;
+						}
+						else
+						{
+							motor[arm] = -80;
+						}
+					}
+					else
+					{
+						if (!armTurbo)
+						{
+							motor[arm] = 4;
+						}
+						else
+						{
+							motor[arm] = 14;
+						}
+					}
+				}
+			}
+			else
+			{
+				motor[arm] = 0;
+			}
+		}
+		else
+		{
+			motor[arm] = 0;
+		}
+
 	}
 }
 
@@ -311,13 +415,13 @@ task main()
   initializeRobot();
 
   waitForStart();
-
 	StartTask(Drive);
-	StartTask(Arm);
+	//StartTask(Arm);
 	StartTask(Gripper);
 	StartTask(FlagRaiser);
 	StartTask(Winch);
-
+	StartTask(ArmPositions);
+	StartTask(display);
   inputManager();
 
 }
