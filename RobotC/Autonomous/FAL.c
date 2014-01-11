@@ -16,6 +16,8 @@
 
 #include "JoystickDriver.c"
 
+const bool competition = false;
+
 task display()
 {
 
@@ -137,11 +139,13 @@ void driveArm(int distanceUp, int speed)
 
 task armRaise()
 {
-	driveArm(2000, 40);
+	driveArm(1700, 40);
 }
 task main()
 {
-	waitForStart();
+	if(competition)
+		waitForStart();
+
 	servo[gripper] = 85;
 	wait1Msec(100);
 	StartTask(display);

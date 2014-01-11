@@ -16,19 +16,16 @@
 
 #include "JoystickDriver.c"
 
-int encoderTicksPerDegree = 25;
-
+const int encoderTicksPerDegree = 26;
+const bool competition = false;
 
 void waitForStop()
 {
 	while(nMotorRunState[rightDrive] != runStateIdle && nMotorRunState[leftDrive] != runStateIdle)
 	{
 	}
-
 	motor[leftDrive] = 0;
 	motor[rightDrive] = 0;
-
-
 }
 
 void drive(int distanceRight, int distanceLeft,int speed)
@@ -39,9 +36,9 @@ void drive(int distanceRight, int distanceLeft,int speed)
 	nMotorEncoderTarget[rightDrive] = distanceRight;
 	nMotorEncoderTarget[leftDrive] = distanceLeft;
 
-
 		motor[rightDrive] = speed;
 		motor[leftDrive] = speed;
+
 
 	waitForStop();
 
@@ -49,27 +46,7 @@ void drive(int distanceRight, int distanceLeft,int speed)
 	nMotorEncoder[leftDrive] = 0;
 }
 
-void driveArm(int distanceUp, int speed)
-{
-	nMotorEncoder[arm] = 0;
-
-	nMotorEncoderTarget[arm] = distanceUp;
-
-	motor[arm]=speed;
-
-	while(nMotorRunState[arm]!=runStateIdle)
-	{
-	}
-	motor[arm]=0;
-
-	nMotorEncoder[arm] = 0;
-}
-
-task armRaise()
-{
-	driveArm(2000, 40);
-}
-void turn(int degrees)
+void Turn(int degrees)
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
@@ -92,27 +69,56 @@ void turn(int degrees)
 
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
+}
+void driveArm(int distanceUp, int speed)
+{
+	nMotorEncoder[arm] = 0;
 
+	nMotorEncoderTarget[arm] = distanceUp;
 
+	motor[arm]=speed;
+
+	while(nMotorRunState[arm]!=runStateIdle)
+	{
+	}
+	motor[arm]=0;
+
+	nMotorEncoder[arm] = 0;
+}
+
+task armRaise()
+{
+	driveArm(1700, 40);
 }
 
 task main()
-{
-	StartTask(armRaise);
-	wait1Msec(3000);
-	servo[gripper] = 85;
-	while(SensorValue[sonar] > 30)
 	{
-		motor[rightDrive] = 50;
-		motor[leftDrive] = 50;
+	if(competition)
+		waitForStart();
+
+	servo[gripper] = 85;
+	StartTask(armRaise);
+	wait1Msec(2000);
+	while(SensorValue[sonar] > 30)
+		{
+		motor[rightDrive] = 60;
+		motor[leftDrive] = 60;
+		}
+		motor[rightDrive] = 0;
+		motor[leftDrive] = 0;
+
+		drive(300, 300, 30);
+
+		wait1Msec(500);
+		servo[gripper] = 240;
+		wait1Msec(200);
+		drive(-1100, -1100, -90);
+		wait1Msec(200);
+		turn(-90);
+		wait1Msec(200);
+		drive(4000, 4000, 90);
+		wait1Msec(200);
+		turn(90);
+		wait1Msec(200);
+		drive(4500, 4500, 90);
 	}
-	motor[rightDrive] = 0;
-	motor[leftDrive] = 0;
-	drive(-500, -500, 50);
-	servo[gripper] = 240;
-	drive(-1000, -1000, 50);
-	turn(-90);
-	drive(3000, 3000, 50);
-	turn(90);
-	drive(2000, 2000, 50);
-}

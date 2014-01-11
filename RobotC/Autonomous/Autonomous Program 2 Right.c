@@ -23,14 +23,11 @@ void waitForStop()
 	while(nMotorRunState[rightDrive] != runStateIdle && nMotorRunState[leftDrive] != runStateIdle)
 	{
 	}
-
 	motor[leftDrive] = 0;
 	motor[rightDrive] = 0;
-
-
 }
 
-void drive(int distanceRight, int distanceLeft,int speed, bool forward)
+void drive(int distanceRight, int distanceLeft,int speed)
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
@@ -38,16 +35,9 @@ void drive(int distanceRight, int distanceLeft,int speed, bool forward)
 	nMotorEncoderTarget[rightDrive] = distanceRight;
 	nMotorEncoderTarget[leftDrive] = distanceLeft;
 
-	if(forward)
-	{
 		motor[rightDrive] = speed;
 		motor[leftDrive] = speed;
-	}
-	else
-	{
-		motor[rightDrive] = -speed;
-		motor[leftDrive] = -speed;
-	}
+
 
 	waitForStop();
 
@@ -97,27 +87,37 @@ void driveArm(int distanceUp, int speed)
 
 task armRaise()
 {
-	driveArm(2000, 40);
+	driveArm(1700, 40);
 }
 
 task main()
 	{
+	if(competition)
+		waitForStart();
+
+	servo[gripper] = 85;
 	StartTask(armRaise);
 	wait1Msec(2000);
 	while(SensorValue[sonar] > 30)
 		{
-		motor[rightDrive] = 40;
-		motor[leftDrive] = 40;
+		motor[rightDrive] = 60;
+		motor[leftDrive] = 60;
 		}
-
 		motor[rightDrive] = 0;
 		motor[leftDrive] = 0;
+
+		drive(300, 300, 30);
+
+		wait1Msec(500);
+		servo[gripper] = 240;
+		wait1Msec(200);
+		drive(-1100, -1100, -90);
 		wait1Msec(200);
 		turn(90);
 		wait1Msec(200);
-		drive(2000, 2000, 40, true);
+		drive(4000, 4000, 90);
 		wait1Msec(200);
 		turn(-90);
 		wait1Msec(200);
-		drive(2000, 2000, 40, true);
+		drive(4500, 4500, 90);
 	}
