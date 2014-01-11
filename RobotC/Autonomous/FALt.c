@@ -142,6 +142,7 @@ task armRaise()
 task main()
 {
 	//waitForStart();
+	nMotorEncoder[arm]=0;
 	servo[gripper] = 85;
 	wait1Msec(100);
 	StartTask(display);

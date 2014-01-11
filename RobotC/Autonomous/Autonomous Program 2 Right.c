@@ -16,7 +16,8 @@
 
 #include "JoystickDriver.c"
 
-const int encoderTicksPerDegree = 26;
+const int encoderTicksPer10Degrees = 268;
+const bool competition = false;
 
 void waitForStop()
 {
@@ -27,7 +28,7 @@ void waitForStop()
 	motor[rightDrive] = 0;
 }
 
-void drive(int distanceRight, int distanceLeft,int speed)
+void drive(int distanceRight, int distanceLeft, int speed)
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
@@ -35,9 +36,8 @@ void drive(int distanceRight, int distanceLeft,int speed)
 	nMotorEncoderTarget[rightDrive] = distanceRight;
 	nMotorEncoderTarget[leftDrive] = distanceLeft;
 
-		motor[rightDrive] = speed;
-		motor[leftDrive] = speed;
-
+	motor[rightDrive] = speed;
+	motor[leftDrive] = speed;
 
 	waitForStop();
 
@@ -50,8 +50,8 @@ void Turn(int degrees)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPerDegree;
-	nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPerDegree;
+	nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPer10Degrees / 10;
+	nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPer10Degrees / 10;
 
 	if (degrees < 0)
 	{
@@ -69,6 +69,7 @@ void Turn(int degrees)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 }
+
 void driveArm(int distanceUp, int speed)
 {
 	nMotorEncoder[arm] = 0;
