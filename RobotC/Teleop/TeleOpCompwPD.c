@@ -49,7 +49,7 @@ bool forward = true;
 
 int position1Value = 1;
 int position2Value = 2600;
-int position3Value = 3500;
+int position3Value = 3900;
 int middleValue = 2800;
 int positionMaxValue = 4000;
 
@@ -304,7 +304,7 @@ task ArmPositions()
 						}
 						else
 						{
-							motor[arm] = -14;
+							motor[arm] = -20;
 						}
 					}
 					else
@@ -340,7 +340,7 @@ task ArmPositions()
 						}
 						else
 						{
-							motor[arm] = 14;
+							motor[arm] = 20;
 						}
 					}
 				}
