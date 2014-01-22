@@ -30,8 +30,8 @@ int driveDamp = 25;
 
 int leftMotorTarget = 0;
 int rightMotorTarget = 0;
-int gripperOpenPos = 240;
-int gripperClosedPos = 85;
+const int gripperOpenPos = 240;
+const int gripperClosedPos = 85;
 int rightJValue = 0;
 int leftJValue = 0;
 
@@ -41,19 +41,20 @@ bool armBackward = false;
 bool gripperOpen = false;
 
 
-bool flagRunning = false;
 bool winchIn = false;
 
 int targetPosition = 0;
-bool forward = true;
 
-int position1Value = 1;
-int position2Value = 2600;
-int position3Value = 3900;
-int middleValue = 2800;
-int positionMaxValue = 4000;
+const int position1Value = 1;
+const int position2Value = 2600;
+const int position3Value = 3900;
+const int middleValue = 2800;
 
-int encoderValue = 0;
+// min takes in two integers as paramaters and returns the smaller of the two
+int min(int a, int b)
+{
+	return (a < b) ? a : b;
+}
 
 void initializeRobot()
 {
@@ -77,16 +78,9 @@ task display()
 /* inputManager reads input from both controllers and sets the values of
 	 corresponding variables.
 
-	 Button 1- A
-	 Button 2- B
-	 Button 3- X
-	 Button 4- Y
-	 Button 5- LB
-	 Button 6- RB
-
 	 Controller 1:
-	 		Left Joystick - Left Motor (leftMotorTarget)
-	 		Right Joystick - Right Motor (rightMotorTarget)
+	 		Left Joystick Y-Axis - Left Motor (leftMotorTarget)
+	 		Right Joystick Y-Axis - Right Motor (rightMotorTarget)
 	 		Left Button - Flag Raiser Counterclockwise
 	 		Right Button - Flag Raiser Clockwise
 
@@ -109,8 +103,6 @@ void inputManager()
 		getJoystickSettings(joystick);
 		rightJValue =joystick.joy1_y2;
 		leftJValue = joystick.joy1_y1;
-
-		encoderValue = nMotorEncoder[arm];
 
 		if(abs(joystick.joy1_y2) < 10)
 		{
@@ -148,8 +140,6 @@ void inputManager()
 
 		armForward = (joystick.joy2_TopHat == TOP_HAT_UP);
 		armBackward = (joystick.joy2_TopHat == TOP_HAT_DOWN);
-
-		//flagRunning = (joy1Btn(5) == 1);
 
 		if((joy1Btn(RIGHT_BUTTON) == 1)&&(joy2Btn(RIGHT_BUTTON)==1))
 		{
@@ -200,22 +190,9 @@ void inputManager()
 	}
 }
 
-// min takes in two integers as paramaters and returns the smaller of the two
-int min(int a, int b)
-{
-	if(a > b)
-	{
-		return b;
-	}
-    return a;
-}
-
 // drive sets the values of the drive motors
 task Drive()
 {
-	bool leftEncoderChanged = true;
-	bool rightEncoderChanged = true;
-
 	while(true)
 	{
 		if(motor[rightDrive] != rightMotorTarget)
@@ -247,48 +224,12 @@ task Drive()
 	}
 }
 
-// arm sets the value of the arm motor
-/* task Arm()
-{
-	while(true)
-	{
-		if(armBackward)
-		{
-			if(armTurbo)
-			{
-				motor[arm] = -70;
-			}
-			else
-			{
-				motor[arm] = -3;
-			}
-		}
-		else if(armForward)
-		{
-			if(armTurbo)
-			{
-				motor[arm]= 70;
-			}
-			else
-			{
-				motor[arm]= 3;
-			}
-		}
-		else
-		{
-			motor[arm]=0;
-		}
-
-		wait10Msec(5);
-	}
-} */
-
 task ArmPositions()
 {
 
 	while(true)
 	{
-		forward = (nMotorEncoder[arm] < middleValue);
+		bool forward = (nMotorEncoder[arm] < middleValue);
 
 		if(targetPosition != 0)
 		{
@@ -376,23 +317,6 @@ task Gripper()
 	wait10Msec(5);
 }
 
-// flagRaiser sets the value of the flag raising motor
-task FlagRaiser()
-{
-	while(true)
-	{
-		if(flagRunning)
-		{
-			motor[flag] = 100;
-		}
-		else
-		{
-			motor[flag] = 0;
-		}
-		wait10Msec(5);
-	}
-}
-
 task Winch()
 {
 	while(true)
@@ -416,12 +340,9 @@ task main()
 
   waitForStart();
 	StartTask(Drive);
-	//StartTask(Arm);
 	StartTask(Gripper);
-	StartTask(FlagRaiser);
 	StartTask(Winch);
 	StartTask(ArmPositions);
 	StartTask(display);
   inputManager();
-
 }
