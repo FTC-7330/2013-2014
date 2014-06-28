@@ -18,7 +18,7 @@
 
 const bool competition = false;
 
-task display()
+task display() // displays values so that we know whats happening
 {
 
     while (true)
@@ -35,7 +35,7 @@ task display()
 	  }
 }
 
-void waitForStop()
+void waitForStop() // waits for stop
 {
 	while(nMotorRunState[rightDrive] != runStateIdle && nMotorRunState[leftDrive] != runStateIdle)
 	{
@@ -47,20 +47,20 @@ void waitForStop()
 
 }
 
-// competition value: 20
-// test value: 23
-const int encoderTicksPer10Degrees = 254;
+// competition value: 200
+// test value: 230
+const int encoderTicksPer10Degrees = 254; // the amount of encoder ticks * 10 per degree
 int sonarDistance = 0;
 // right turn is positive degrees, left turn is negative.
-void Turn(int degrees)
+void Turn(int degrees) // turns a specific amount of degrees
 {
-	nMotorEncoder[rightDrive] = 0;
+	nMotorEncoder[rightDrive] = 0; // stops the drive
 	nMotorEncoder[leftDrive] = 0;
 
-	nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPer10Degrees / 10;
-	nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPer10Degrees / 10;
+	nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPer10Degrees / 10; // sets the right drive encoder target
+	nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPer10Degrees / 10; // sets the left drive encoder target
 
-	if (degrees < 0)
+	if (degrees < 0) //checks to see if the robot is turning right or left
 	{
 		motor[rightDrive] = 90;
 		motor[leftDrive] = -90;
@@ -77,25 +77,27 @@ void Turn(int degrees)
 	nMotorEncoder[leftDrive] = 0;
 }
 
-void drive(int distanceRight, int distanceLeft,int speed)
+void drive(int distanceRight, int distanceLeft,int speed) // drives forward without conflict
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	nMotorEncoderTarget[rightDrive] = distanceRight;
-	nMotorEncoderTarget[leftDrive] = distanceLeft;
+	nMotorEncoderTarget[rightDrive] = distanceRight; // sets the right encoder target
+	nMotorEncoderTarget[leftDrive] = distanceLeft; // sets the left encoder target
 
-		motor[rightDrive] = speed;
-		motor[leftDrive] = speed;
-
+	//sets the speed
+	motor[rightDrive] = speed;
+	motor[leftDrive] = speed;
 
 	waitForStop();
 
+	//stops the motors
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 }
-void driveNoWait(int distanceRight, int distanceLeft,int speed, bool forward)
+void driveNoWait(int distanceRight, int distanceLeft,int speed, bool forward)// drives forward, for use while using the arm/gripper
 {
+	//same thing as drive but lets other functions run alongside it
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
@@ -113,7 +115,7 @@ void driveNoWait(int distanceRight, int distanceLeft,int speed, bool forward)
 		motor[leftDrive] = -speed;
 	}
 }
-void driveArm(int distanceUp, int speed)
+void driveArm(int distanceUp, int speed) // moves the arm
 {
 	nMotorEncoder[arm] = 0;
 
@@ -129,13 +131,13 @@ void driveArm(int distanceUp, int speed)
 	nMotorEncoder[arm] = 0;
 }
 
-task armRaise()
+task armRaise() // raises the arm to the hight of the bucket
 {
 	driveArm(1700, 40);
 }
 task main()
 {
-	if(competition)
+	if(competition)// sets it to competition
 		waitForStart();
 
 	servo[gripper] = 85;

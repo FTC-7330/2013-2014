@@ -16,6 +16,7 @@
 
 #include "JoystickDriverChanges.c"
 
+// definitions to make sure we know what button is being pressed
 #define BUTTON_X 1
 #define BUTTON_Y 4
 #define BUTTON_A 2
@@ -26,6 +27,8 @@
 #define TOP_HAT_UP 0
 #define TOP_HAT_DOWN 4
 
+
+//definitions
 int driveDamp = 25;
 
 int leftMotorTarget = 0;
@@ -56,7 +59,7 @@ int min(int a, int b)
     return (a < b) ? a : b;
 }
 
-void initializeRobot()
+void initializeRobot() //sets all variables to starting values
 {
     nMotorEncoder[leftDrive] = 0;
     nMotorEncoder[rightDrive] = 0;
@@ -65,7 +68,7 @@ void initializeRobot()
     return;
 }
 
-task display()
+task display() // displays the arm encoder value
 {
     while (true)
     {
@@ -92,7 +95,7 @@ task display()
 	 		Left Button - Arm turbo (armTurbo)
 
 */
-void inputManager()
+void inputManager() // manages button presses
 {
 
     bool buttonBIsDown = false;
@@ -104,13 +107,13 @@ void inputManager()
         rightJValue =joystick.joy1_y2;
         leftJValue = joystick.joy1_y1;
 
-        if(abs(joystick.joy1_y2) < 10)
+        if(abs(joystick.joy1_y2) < 10) //dead zone
         {
             leftMotorTarget = 0;
         }
         else
         {
-            if(joystick.joy1_y2 > 0)
+            if(joystick.joy1_y2 > 0) // sets left motor target
             {
                 leftMotorTarget = ((long)(rightJValue*rightJValue)-100)*100/(128*128);
             }
@@ -120,13 +123,13 @@ void inputManager()
             }
         }
 
-        if(abs(joystick.joy1_y1) < 10)
+        if(abs(joystick.joy1_y1) < 10)// dead zone
         {
             rightMotorTarget = 0;
         }
         else
         {
-            if(joystick.joy1_y1 > 0)
+            if(joystick.joy1_y1 > 0) // sets right motor target
             {
                 rightMotorTarget = ((long)(leftJValue*leftJValue)-100)*100/(128*128);
             }
@@ -136,12 +139,12 @@ void inputManager()
             }
         }
 
-        armTurbo = (joy2Btn(LEFT_BUTTON) == 1);
+        armTurbo = (joy2Btn(LEFT_BUTTON) == 1); // arm turbo
 
-        armForward = (joystick.joy2_TopHat == TOP_HAT_UP);
-        armBackward = (joystick.joy2_TopHat == TOP_HAT_DOWN);
+        armForward = (joystick.joy2_TopHat == TOP_HAT_UP); // sets arm to go forward in relation to the front of the robot
+        armBackward = (joystick.joy2_TopHat == TOP_HAT_DOWN); // sets arm to go backward in relation to the front of the robot
 
-        if((joy1Btn(RIGHT_BUTTON) == 1)&&(joy2Btn(RIGHT_BUTTON)==1))
+        if((joy1Btn(RIGHT_BUTTON) == 1)&&(joy2Btn(RIGHT_BUTTON)==1)) // winch in/out
         {
             winchIn=true;
         }
@@ -150,39 +153,39 @@ void inputManager()
             winchIn = false;
         }
 
-        buttonBIsDown = (joy2Btn(BUTTON_B) == 1);
+        buttonBIsDown = (joy2Btn(BUTTON_B) == 1); //opens/closes gripper
         if(buttonBIsDown && !buttonBWasDown)
         {
             gripperOpen = !gripperOpen;
         }
         buttonBWasDown = buttonBIsDown;
 
-        if (joy2Btn(START_BUTTON) == 1)
+        if (joy2Btn(START_BUTTON) == 1) // sets the encoder value of the arm to zero
         {
             nMotorEncoder[arm] = 1;
         }
 
-        if(joy2Btn(BUTTON_A) == 1)
+        if(joy2Btn(BUTTON_A) == 1) // sets the target position to position 1: ground
         {
             targetPosition = position1Value;
         }
-        else if(joy2Btn(BUTTON_X) == 1)
+        else if(joy2Btn(BUTTON_X) == 1) // sets the target position to position 2: basket
         {
             targetPosition = position2Value;
         }
-        else if(joy2Btn(BUTTON_Y) == 1)
+        else if(joy2Btn(BUTTON_Y) == 1) // sets the target position to position 3: backward basket
         {
             targetPosition = position3Value;
         }
-        else if(armForward)
+        else if(armForward)  // sets the target position to make the arm go forward
         {
             targetPosition = 20000;
         }
-        else if(armBackward)
+        else if(armBackward) // sets the target position to make the arm go backward
         {
             targetPosition = -20000;
         }
-        else
+        else // arm doesnt move, target position = 0
         {
             motor[arm] = 0;
             targetPosition = 0;
@@ -195,31 +198,31 @@ task Drive()
 {
     while(true)
     {
-        if(motor[rightDrive] != rightMotorTarget)
+        if(motor[rightDrive] != rightMotorTarget) // if the right motor position is not at the target position
         {
-            if(motor[rightDrive] < rightMotorTarget)
+            if(motor[rightDrive] < rightMotorTarget)// if it is less
             {
-                motor[rightDrive] += min(driveDamp, rightMotorTarget - motor[rightDrive]);
+                motor[rightDrive] += min(driveDamp, rightMotorTarget - motor[rightDrive]); // increase speed
             }
-            else
+            else // if it is greater
             {
-                motor[rightDrive] -= min(driveDamp, motor[rightDrive] - rightMotorTarget);
+                motor[rightDrive] -= min(driveDamp, motor[rightDrive] - rightMotorTarget);// decrease speed
             }
         }
 
-        if(motor[leftDrive] != leftMotorTarget)
+        if(motor[leftDrive] != leftMotorTarget)// if the left motor position is not at the target position
         {
-            if(motor[leftDrive] < leftMotorTarget)
+            if(motor[leftDrive] < leftMotorTarget) // if it is less
             {
-                motor[leftDrive] += min(driveDamp, leftMotorTarget - motor[leftDrive]);
+                motor[leftDrive] += min(driveDamp, leftMotorTarget - motor[leftDrive]); // increase speed
             }
-            else
+            else // if it is greater
             {
-                motor[leftDrive] -= min(driveDamp, motor[leftDrive] - leftMotorTarget);
+                motor[leftDrive] -= min(driveDamp, motor[leftDrive] - leftMotorTarget); // decrease speed
             }
         }
 
-        wait10Msec(5);
+        wait10Msec(5); // wait to reduce lag
 
     }
 }
@@ -229,7 +232,7 @@ task ArmPositions()
 
     while(true)
     {
-        bool forward = (nMotorEncoder[arm] < middleValue);
+        bool forward = (nMotorEncoder[arm] < middleValue); // sets to true if the arm is forward in relation to the robot / sets to false otherwise
 
         if(targetPosition != 0)
         {
@@ -304,41 +307,41 @@ task Gripper()
 {
     while(true)
     {
-        if(!gripperOpen)
+        if(!gripperOpen) // if the value for the gripper false
         {
-            servo[gripper] = gripperClosedPos;
+            servo[gripper] = gripperClosedPos; // closes the gripper
         }
 
         if(gripperOpen)
         {
-            servo[gripper] = gripperOpenPos;
+            servo[gripper] = gripperOpenPos; // opens the gripper
         }
     }
-    wait10Msec(5);
+    wait10Msec(5); // wait to reduce lag
 }
 
 task Winch()
 {
     while(true)
     {
-        if(winchIn)
+        if(winchIn) // if winchin value set to true
         {
-            motor[winch] = -85;
+            motor[winch] = -85; // winch at 85% powah
         }
-        else
+        else // if false
         {
-            motor[winch] = 0;
+            motor[winch] = 0; // no winching lol
         }
 
-        wait10Msec(5);
+        wait10Msec(5); // wait to reduce lag
     }
 }
 
 task main()
 {
-    initializeRobot();
+    initializeRobot(); // initializes variables
 
-    waitForStart();
+    waitForStart(); // makes sure the robot doesnt go ham while competition is being set up
     StartTask(Drive);
     StartTask(Gripper);
     StartTask(Winch);
