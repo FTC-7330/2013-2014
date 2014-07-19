@@ -116,3 +116,37 @@ task armRaise()
 {
 	driveArm(armRaiseDistance, armRaiseSpeed);
 }
+
+task driveFailSafe()
+{
+	int oldPower;
+	int newPower;
+	int oldEncoderChange;
+	int newEncoderChange;
+
+	while(true)
+	{
+		oldEncoderChange = 0;
+		newEncoderChange = 0;
+
+		oldPower = motor[rightDrive];
+		int oldEncoderValueOne = nMotorEncoder[rightDrive];
+		wait10Msec(1)
+		int oldEncoderValueTwo = nMotorEncoder[rightDrive]
+		oldEncoderChange = oldEncoderValueTwo-oldEncoderValueOne;
+
+		wait10Msec(10);
+
+		newPower = motor[rightDrive];
+		int newEncoderValueOne = nMotorEncoder[rightDrive];
+		wait10Msec(1);
+		int newEncoderValueTwo = nMotorEncoder[rightDrive];
+		newEncoderChange = newEncoderValueTwo - newEncoderValueTwo;
+
+		if(oldPower != newPower && newEncoderChange != oldEncoderChange)
+		{
+			motor[leftDrive]=0;
+			motor[rightDrive]=0;
+		}
+	}
+}
