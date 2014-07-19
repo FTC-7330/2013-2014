@@ -27,7 +27,7 @@ int driveSpeed = 50;
 
 task main()
 {
-	waitForStart();
+	//waitForStart();
   motor[rightDrive] = driveSpeed;
 	motor[leftDrive] = driveSpeed;
 
