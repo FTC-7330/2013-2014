@@ -18,6 +18,8 @@
 #include "Autonomous Functions.h"
 
 const bool competition = false;
+const int closedGripper = 85;
+
 
 task main()
 {
@@ -25,13 +27,13 @@ task main()
 		waitForStart();
 
 
-	servo[gripper] = 85;
+	servo[gripper] = closedGripper;
 	wait1Msec(100);
 	StartTask(display);
 	StartTask(armRaise);
 
-	int distanceForwardRight = 0;
-	int distanceForwardLeft = 0;
+	int distanceRightForward = 0;
+	int distanceLeftForward = 0;
 	int turnDistanceRight = 0;
 	int turnDistanceLeft = 0;
 
@@ -44,21 +46,21 @@ task main()
 	motor[leftDrive] = 0;
 	motor[rightDrive] = 0;
 
-	distanceForwardRight = nMotorEncoder[rightDrive];
-	distanceForwardLeft = nMotorEncoder[leftDrive];
+	distanceRightForward = nMotorEncoder[rightDrive];
+	distanceLeftForward = nMotorEncoder[leftDrive];
 
 	wait1Msec(200);
 
-	if(distanceForwardRight < 5000)
+	if(distanceRightForward < 5000)
 	{
-		distanceForwardRight = nMotorEncoder[rightDrive] + 1000;
-		distanceForwardLeft = nMotorEncoder[leftDrive] + 1000;
+		distanceRightForward += 1000;
+		distanceLeftForward += 1000;
 		drive(1900, 1900, 90, false);
 	}
 	else
 	{
-		distanceForwardRight = nMotorEncoder[rightDrive]-500;
-		distanceForwardLeft = nMotorEncoder[leftDrive]-500;
+		distanceRightForward = nMotorEncoder[rightDrive] - 500;
+		distanceLeftForward = nMotorEncoder[leftDrive] - 500;
 		drive(1200, 1200, 90, false);
 	}
 
@@ -73,6 +75,7 @@ task main()
 	while(SensorValue[sonar] > 25)
 	{
 	}
+
 	motor[rightDrive] = 0;
 	motor[leftDrive] = 0;
 	wait1Msec(200);
@@ -80,13 +83,14 @@ task main()
 	wait1Msec(300);
 	drive(-2000, -2000, -90, false);
 	Turn(90);
-	if(distanceForwardRight < 5000)
+
+	if(distanceRightForward < 5000)
 	{
-		drive(distanceForwardRight, distanceForwardLeft, 90, false);
+		drive(distanceRightForward, distanceLeftForward, 90, false);
 	}
 	else
 	{
-		drive(distanceForwardRight, distanceForwardLeft, 90, false);
+		drive(distanceRightForward, distanceLeftForward, 90, false);
 	}
 
 

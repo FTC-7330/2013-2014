@@ -73,7 +73,7 @@ void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	if (!runForever) //sets
+	if (!runForever) //sets encoder targets if not running forever
 	{
 		nMotorEncoderTarget[rightDrive] = distanceRight;
 		nMotorEncoderTarget[leftDrive] = distanceLeft;
@@ -87,7 +87,7 @@ void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
 	motor[rightDrive] = speed;
 	motor[leftDrive] = speed;
 
-	if (!runForever)
+	if (!runForever) //stops when target is reached.
 	{
 		waitForStop();
 	}
@@ -111,7 +111,7 @@ void driveArm(int distanceUp, int speed)
 	nMotorEncoder[arm] = 0;
 }
 
-
+// calls driveArm method as a task with parameters defined as constants
 task armRaise()
 {
 	driveArm(armRaiseDistance, armRaiseSpeed);
