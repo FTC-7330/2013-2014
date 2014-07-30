@@ -18,7 +18,7 @@ task display()
 {
     while (true)
     {
-    	//why do you need the display ints?
+    	//Displays information about encoders and IR and sonar sensors
 			int display = SensorValue[irSensor];
 			int right = nMotorEncoder[rightDrive];
 			int left = nMotorEncoder[leftDrive];
@@ -66,14 +66,14 @@ void Turn(int degrees)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 }
-// reset encoder values; drives for the distance given at the given speed; if runForever is true,
-// drives forever
+// reset encoder values; drives for the distance given at the given speed;
+//if runForever is true, drives forever
 void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	if (!runForever) //sets
+	if (!runForever)
 	{
 		nMotorEncoderTarget[rightDrive] = distanceRight;
 		nMotorEncoderTarget[leftDrive] = distanceLeft;
@@ -111,28 +111,27 @@ void driveArm(int distanceUp, int speed)
 	nMotorEncoder[arm] = 0;
 }
 
-
+//raises arm as a task, allowing it to be done while driving forwards
 task armRaise()
 {
 	driveArm(armRaiseDistance, armRaiseSpeed);
 }
-
+//If the robot is running into a wall, this will cut the motors
 task driveFailSafe()
 {
 	int oldPower;
 	int newPower;
-	int oldEncoderChange;
-	int newEncoderChange;
+	int oldEncoderChange = 0;
+	int newEncoderChange = 0;
 
 	while(true)
 	{
 		oldEncoderChange = 0;
 		newEncoderChange = 0;
-
 		oldPower = motor[rightDrive];
 		int oldEncoderValueOne = nMotorEncoder[rightDrive];
-		wait10Msec(1)
-		int oldEncoderValueTwo = nMotorEncoder[rightDrive]
+		wait10Msec(1);
+		int oldEncoderValueTwo = nMotorEncoder[rightDrive];
 		oldEncoderChange = oldEncoderValueTwo-oldEncoderValueOne;
 
 		wait10Msec(10);
@@ -143,7 +142,7 @@ task driveFailSafe()
 		int newEncoderValueTwo = nMotorEncoder[rightDrive];
 		newEncoderChange = newEncoderValueTwo - newEncoderValueTwo;
 
-		if(oldPower != newPower && newEncoderChange != oldEncoderChange)
+		if(oldPower == newPower && newEncoderChange != oldEncoderChange)
 		{
 			motor[leftDrive]=0;
 			motor[rightDrive]=0;
