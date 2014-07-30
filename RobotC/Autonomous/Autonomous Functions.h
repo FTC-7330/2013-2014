@@ -73,7 +73,8 @@ void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	if (!runForever)
+
+	if (!runForever) //sets encoder targets if not running forever
 	{
 		nMotorEncoderTarget[rightDrive] = distanceRight;
 		nMotorEncoderTarget[leftDrive] = distanceLeft;
@@ -87,7 +88,7 @@ void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
 	motor[rightDrive] = speed;
 	motor[leftDrive] = speed;
 
-	if (!runForever)
+	if (!runForever) //stops when target is reached.
 	{
 		waitForStop();
 	}
@@ -111,11 +112,14 @@ void driveArm(int distanceUp, int speed)
 	nMotorEncoder[arm] = 0;
 }
 
+
 //raises arm as a task, allowing it to be done while driving forwards
+// calls driveArm method as a task with parameters defined as constants
 task armRaise()
 {
 	driveArm(armRaiseDistance, armRaiseSpeed);
 }
+
 //If the robot is running into a wall, this will cut the motors
 task driveFailSafe()
 {
