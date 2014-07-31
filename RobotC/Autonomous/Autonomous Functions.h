@@ -20,7 +20,7 @@ task display()
 {
     while (true)
     {
-    	//why do you need the display ints?
+    	//Displays information about encoders and IR and sonar sensors
 			int display = SensorValue[irSensor];
 			int right = nMotorEncoder[rightDrive];
 			int left = nMotorEncoder[leftDrive];
@@ -68,12 +68,13 @@ void Turn(int degrees)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 }
-// reset encoder values; drives for the distance given at the given speed; if runForever is true,
-// drives forever
+// reset encoder values; drives for the distance given at the given speed;
+//if runForever is true, drives forever
 void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
 {
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
+
 
 	if (!runForever) //sets encoder targets if not running forever
 	{
@@ -113,42 +114,13 @@ void driveArm(int distanceUp, int speed)
 	nMotorEncoder[arm] = 0;
 }
 
+
+//raises arm as a task, allowing it to be done while driving forwards
 // calls driveArm method as a task with parameters defined as constants
 task armRaise()
 {
 	driveArm(armRaiseDistance, armRaiseSpeed);
 }
-
-/*
-task driveFailSafe()
-{
-	int oldPower = motor[rightDrive];
-	int oldEncoderValueOne = nMotorEncoder[rightDrive];
-	wait10Msec(10);
-	int oldEncoderValueTwo = nMotorEncoder[rightDrive];
-	int oldEncoderChange = oldEncoderValueTwo - oldEncoderValueOne;
-
-	while(true)
-	{
-		wait10Msec(10);
-
-		int newPower = motor[rightDrive];
-		int newEncoderValueOne = nMotorEncoder[rightDrive];
-		wait10Msec(10);
-		int newEncoderValueTwo = nMotorEncoder[rightDrive];
-		int newEncoderChange = newEncoderValueTwo - newEncoderValueOne;
-
-		if(oldPower == newPower && newEncoderChange < oldEncoderChange * .5)
-		{
-			motor[leftDrive] = 0;
-			motor[rightDrive] = 0;
-		}
-
-		oldPower = newPower;
-		oldEncoderChange = newEncoderChange;
-	}
-}
-*/
 
 task driveFailSafe()
 {
