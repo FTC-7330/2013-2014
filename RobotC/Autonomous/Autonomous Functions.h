@@ -12,6 +12,8 @@ const int encoderTicksPer10Degrees = 260;
 const int sonarDistance = 0;
 const int armRaiseDistance = 1700;
 const int armRaiseSpeed = 40;
+const int rollingAvgWindow = 5;
+const int rollingAvgInterval = 50;
 
 // displays value of the IR sensor, the right and left encoders, and the sonar sensor
 task display()
@@ -117,36 +119,67 @@ task armRaise()
 	driveArm(armRaiseDistance, armRaiseSpeed);
 }
 
+/*
 task driveFailSafe()
 {
-	int oldPower;
-	int newPower;
-	int oldEncoderChange;
-	int newEncoderChange;
+	int oldPower = motor[rightDrive];
+	int oldEncoderValueOne = nMotorEncoder[rightDrive];
+	wait10Msec(10);
+	int oldEncoderValueTwo = nMotorEncoder[rightDrive];
+	int oldEncoderChange = oldEncoderValueTwo - oldEncoderValueOne;
 
 	while(true)
 	{
-		oldEncoderChange = 0;
-		newEncoderChange = 0;
-
-		oldPower = motor[rightDrive];
-		int oldEncoderValueOne = nMotorEncoder[rightDrive];
-		wait10Msec(1)
-		int oldEncoderValueTwo = nMotorEncoder[rightDrive]
-		oldEncoderChange = oldEncoderValueTwo-oldEncoderValueOne;
-
 		wait10Msec(10);
 
-		newPower = motor[rightDrive];
+		int newPower = motor[rightDrive];
 		int newEncoderValueOne = nMotorEncoder[rightDrive];
-		wait10Msec(1);
+		wait10Msec(10);
 		int newEncoderValueTwo = nMotorEncoder[rightDrive];
-		newEncoderChange = newEncoderValueTwo - newEncoderValueTwo;
+		int newEncoderChange = newEncoderValueTwo - newEncoderValueOne;
 
-		if(oldPower != newPower && newEncoderChange != oldEncoderChange)
+		if(oldPower == newPower && newEncoderChange < oldEncoderChange * .5)
 		{
-			motor[leftDrive]=0;
-			motor[rightDrive]=0;
+			motor[leftDrive] = 0;
+			motor[rightDrive] = 0;
 		}
+
+		oldPower = newPower;
+		oldEncoderChange = newEncoderChange;
+	}
+}
+*/
+
+task driveFailSafe()
+{
+	int encoderChange[rollingAvgWindow] = {0, 0, 0, 0, 0};
+	int index = 0;
+	int oldEncoderValue = nMotorEncoder[leftDrive];
+	int oldPower = motor[leftDrive];
+	wait1Msec(rollingAvgInterval);
+
+	while(true)
+	{
+		int newEncoderValue = nMotorEncoder[leftDrive];
+		int newPower = motor[leftDrive];
+
+		if (oldPower != newPower)
+		{
+			for (int i = 0; i < rollingAvgWindow
+		}
+
+		encoderChange[index] = oldEncoderValue - newEncoderValue;
+		if (index < 5)
+	  {
+			index++;
+		}
+		else
+		{
+			index = 0;
+	  }
+
+  	oldEncoderValue = newEncoderValue;
+  	oldPower = newPower;
+  	wait1Msec(rollingAvgInterval);
 	}
 }
