@@ -122,26 +122,49 @@ task armRaise()
 	driveArm(armRaiseDistance, armRaiseSpeed);
 }
 
+// uses rolling averages to detect when the motors are in danger (they are running
+// but the robot isn't moving); if this situation is detected the motors are stopped
 task driveFailSafe()
 {
+	// *** need to add more zeros when window changes
 	int encoderChange[rollingAvgWindow] = {0, 0, 0, 0, 0};
 	int index = 0;
 	int oldEncoderValue = nMotorEncoder[leftDrive];
 	int oldPower = motor[leftDrive];
+	int rollingSum = 0;
+
 	wait1Msec(rollingAvgInterval);
 
 	while(true)
 	{
+		// sets the "new" values
 		int newEncoderValue = nMotorEncoder[leftDrive];
 		int newPower = motor[leftDrive];
 
-		if (oldPower != newPower)
+		// updates the average and the array that keeps track of the rolling sum
+		rollingSum += (oldEncoderValue - newEncoderValue) - encoderChange[index];
+		encoderChange[index] = oldEncoderValue - newEncoderValue;
+
+		// if the power has changed, fills the array with the most recent encoder
+		// change
+	  if (oldPower != newPower)
 		{
-			for (int i = 0; i < rollingAvgWindow
+			for (int i = 0; i < rollingAvgWindow; i++)
+			{
+				encoderChange[i] = encoderChange[index];
+			}
+			rollingSum = encoderChange[index] * rollingAvgWindow;
 		}
 
-		encoderChange[index] = oldEncoderValue - newEncoderValue;
-		if (index < 5)
+		// breaks from the loop if the most recent encoder change is significantly
+		// lower than expected
+		if(encoderChange[index] < (rollingSum / rollingAvgWindow) * 0.5)
+		{
+			break;
+	 	}
+
+	 	// updates the index that signifies which element of the array to change
+		if (index < rollingAvgWindow)
 	  {
 			index++;
 		}
@@ -150,8 +173,16 @@ task driveFailSafe()
 			index = 0;
 	  }
 
+	  // sets "old" values to the "new" values and waits
   	oldEncoderValue = newEncoderValue;
   	oldPower = newPower;
   	wait1Msec(rollingAvgInterval);
+	}
+
+	// sets the motors to zero
+	while (true)
+	{
+		motor[leftDrive] = 0;
+		motor[rightDrive] = 0;
 	}
 }
