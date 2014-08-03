@@ -50,11 +50,11 @@ task main()
 
 	if(distanceForwardRight < 5000)
 	{
-		drive(1600, 1600, 90, false);
+		drive(1200, 1200, 90, false);
 	}
 	else
 	{
-		drive(750, 750, 90, false);
+		drive(350, 350, 90, false);
 	}
 
 	motor[rightDrive] = 0;
@@ -73,13 +73,12 @@ task main()
 	motor[leftDrive] = 0;
 	turnDistanceRight = nMotorEncoder[rightDrive] - 300;
 	turnDistanceLeft = nMotorEncoder[leftDrive] - 300;
-	drive(-300,-300,-50, false);
-	wait10Msec(200);
+	wait10Msec(100);
 	servo[gripper] = 240;
 	wait1Msec(300);
-	drive(-turnDistanceRight, -turnDistanceLeft, -90, false);
+	drive(-turnDistanceRight-500, -turnDistanceLeft-500, -90, false);
 	Turn(-90);
-	drive(distanceForwardRight + 700, distanceForwardLeft + 700, 90, false);
+	drive(distanceForwardRight + 800, distanceForwardLeft + 800, 90, false);
 	Turn(70);
 	drive(6000, 6000, 90, false);
 	Turn(110);

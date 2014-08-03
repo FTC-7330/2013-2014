@@ -1,14 +1,21 @@
-#pragma config(Sensor, S1,     touch,          sensorTouch)
-#pragma config(Sensor, S2,     gyro,           sensorI2CHiTechnicGyro)
-#pragma config(Sensor, S3,     light,          sensorLightActive)
-#pragma config(Sensor, S4,     sonar,          sensorSONAR)
-#pragma config(Motor,  motorA,          gripperMotor,  tmotorNXT, openLoop, encoder)
-#pragma config(Motor,  motorB,          rightMotor,    tmotorNXT, openLoop, encoder)
-#pragma config(Motor,  motorC,          leftMotor,     tmotorNXT, openLoop, encoder)
+#pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  none)
+#pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Sensor, S2,     irSensor,       sensorHiTechnicIRSeeker1200)
+#pragma config(Sensor, S3,     sonar,          sensorSONAR)
+#pragma config(Motor,  mtr_S1_C1_1,     leftDrive,     tmotorTetrix, PIDControl, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     rightDrive,    tmotorTetrix, PIDControl, encoder)
+#pragma config(Motor,  mtr_S1_C2_1,     arm,           tmotorTetrix, PIDControl, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C2_2,     gHook,         tmotorTetrix, openLoop)
+#pragma config(Servo,  srvo_S1_C3_1,    gripper,              tServoNone)
+#pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
+#pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
 
 // competition value: 20
 // test value: 23
-const int encoderTicksPer10Degrees = 260;
+const int encoderTicksPer10Degrees = 257;
 const int sonarDistance = 0;
 const int armRaiseDistance = 1700;
 const int armRaiseSpeed = 40;
