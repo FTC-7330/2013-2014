@@ -12,11 +12,15 @@
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
 #include "JoystickDriver.c"
-int driveSpeed = 50;
+
 task main()
 {
 	waitForStart();
-  motor[rightDrive] = driveSpeed;
-	motor[leftDrive] = driveSpeed;
-	wait1Msec(4700);
+	// goes forward
+  motor[rightDrive] = 50;
+	motor[leftDrive] = 50;
+	wait1Msec(4700); // waits for 4.7 seconds
+	// stops
+	motor[rightDrive] = 0;
+	motor[leftDrive] = 0;
 }
