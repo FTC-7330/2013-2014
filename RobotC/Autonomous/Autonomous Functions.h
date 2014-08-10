@@ -15,7 +15,8 @@
 
 // competition value: 20
 // test value: 23
-const int encoderTicksPer10Degrees = 257;
+const int encoderTicksPer10DegreesLeft = 257;
+const int encoderTicksPer10DegreesRight = 270;
 const int sonarDistance = 0;
 const int armRaiseDistance = 1700;
 const int armRaiseSpeed = 40;
@@ -56,8 +57,16 @@ void Turn(int degrees)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 
-	nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPer10Degrees / 10;
-	nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPer10Degrees / 10;
+	if(degrees>0)
+	{
+		nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPer10DegreesRight / 10;
+		nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPer10DegreesRight / 10;
+	}
+	else
+	{
+		nMotorEncoderTarget[rightDrive] = -degrees*encoderTicksPer10DegreesLeft / 10;
+		nMotorEncoderTarget[leftDrive] = degrees*encoderTicksPer10DegreesLeft / 10;
+	}
 
 	if (degrees < 0)
 	{
