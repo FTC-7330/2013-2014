@@ -54,7 +54,7 @@ task main()
 	}
 	else
 	{
-		drive(350, 350, 90, false);
+		drive(400, 400, 90, false);
 	}
 
 	motor[rightDrive] = 0;

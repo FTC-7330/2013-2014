@@ -15,6 +15,8 @@
 
 // competition value: 20
 // test value: 23
+//right test value:270
+//left test value: 260
 const int encoderTicksPer10DegreesLeft = 257;
 const int encoderTicksPer10DegreesRight = 270;
 const int sonarDistance = 0;
