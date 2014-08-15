@@ -13,10 +13,18 @@
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
 
-// competition value: 20
-// test value: 23
-//right test value:270
-//left test value: 260
+// Functions for Autonomous Methods
+// - display
+// - turn
+// - drive
+// - driveArm
+// - driveFailSafe
+
+// right test value: 270
+// left test value: 260
+// right competition value: ????
+// left competition value: ????
+
 const int encoderTicksPer10DegreesLeft = 257;
 const int encoderTicksPer10DegreesRight = 270;
 const int sonarDistance = 0;
@@ -24,6 +32,7 @@ const int armRaiseDistance = 1700;
 const int armRaiseSpeed = 40;
 const int rollingAvgWindow = 5;
 const int rollingAvgInterval = 50;
+const int closedGripper = 85;
 
 // displays value of the IR sensor, the right and left encoders, and the sonar sensor
 task display()
@@ -86,6 +95,7 @@ void Turn(int degrees)
 	nMotorEncoder[rightDrive] = 0;
 	nMotorEncoder[leftDrive] = 0;
 }
+
 // reset encoder values; drives for the distance given at the given speed;
 //if runForever is true, drives forever
 void drive(int distanceRight, int distanceLeft, int speed, bool runForever)
