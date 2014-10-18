@@ -25,8 +25,8 @@
 // right competition value: ????
 // left competition value: ????
 
-const int encoderTicksPer10DegreesLeft = 257;
-const int encoderTicksPer10DegreesRight = 270;
+const int encoderTicksPer10DegreesLeft = 253;
+const int encoderTicksPer10DegreesRight = 272;
 const int sonarDistance = 0;
 const int armRaiseDistance = 1700;
 const int armRaiseSpeed = 40;
