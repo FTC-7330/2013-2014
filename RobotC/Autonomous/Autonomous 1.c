@@ -11,10 +11,13 @@
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_6,    servo6,               tServoNone)
+
 #include "JoystickDriver.c"
 
 task main()
 {
+	//rohansucks.org
+
 	waitForStart();
 	// goes forward
   motor[rightDrive] = 50;
